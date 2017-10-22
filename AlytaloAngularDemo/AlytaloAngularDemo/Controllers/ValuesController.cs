@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AlytaloAngularDemo.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -34,6 +35,29 @@ namespace AlytaloAngularDemo.Controllers
         // DELETE api/values/5
         public void Delete(int id)
         {
+        }
+        [HttpGet]
+        [Route("api/Values/OrderCount")]
+        public int OrderCount()
+        {
+            NorthwindDemoEntities entities = new NorthwindDemoEntities();
+            int orderCount = entities.Orders.Count();
+            entities.Dispose();
+            return orderCount;
+        }
+
+        [HttpGet]
+        [Route("api/Values/LastNOrders/{id:int}")]
+        public List<string> LastNOrders(int id)
+        {
+            NorthwindDemoEntities entities = new NorthwindDemoEntities();
+            int numberOfOrdersToReturn = id;
+            List<Orders> lastOrders = 
+                (from o in entities.Orders orderby o.OrderDate descending select o).Take(numberOfOrdersToReturn).ToList();
+            List<string> customerNames =
+                lastOrders.Select(o => o.Customers.CompanyName).ToList();
+            entities.Dispose();
+            return customerNames;
         }
     }
 }
